@@ -1,0 +1,264 @@
+spring:
+  profiles:
+    active:
+    - dev
+
+---
+
+spring:
+  profiles: dev
+#=======================================================================================================================
+  #相关Redis配置
+  redis:
+    database: 0         #redis索引（默认0）
+    cluster:
+      nodes: 
+        - 192.168.1.164:6379
+        - 192.168.1.165:6379
+        - 192.168.1.166:6379
+    password:
+    timeout: 5000
+    sentinel:
+      master: mymaster
+      nodes: 192.168.1.164:26379,192.168.1.165:26379,192.168.1.166:26379
+    lettuce:
+      pool:
+        max-active: 8     #连接池最大连接数，使用负值没有限制
+        max-wait: -1      #连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 8       #连接池中的最大空闲连接
+        min-idle: 0       #连接池中的最小空闲连接
+        timeout: 5000     #连接超时时间（毫秒）
+#=======================================================================================================================
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/,http://localhost:8762/eureka/,http://localhost:8763/eureka/
+#=======================================================================================================================
+zuul:
+  ignored-services: "*" #原真实服务名不再对外暴露
+  routes:
+    casin-sso:
+      path: /sso/**
+      serviceId: casin-sso
+    casin-product:
+      path: /product/**
+      serviceId: casin-product
+    casin-fastdfs:
+      path: /fastdfs/**
+      serviceId: casin-fastdfs
+    casin-order:
+      path: /order/**
+      serviceId: casin-order
+    casin-cart:
+      path: /cart/**
+      serviceId: casin-cart
+    casin-logistics:
+      path: /logistics/**
+      serviceId: casin-logistics
+    casin-payment:
+      path: /payment/**
+      serviceId: casin-payment
+    casin-settle:
+      path: /settle/**
+      serviceId: casin-settle
+    casin-search:
+      path: /search/**
+      serviceId: casin-search
+  ratelimit:
+      enabled: true
+      repository: REDIS
+      policy-list:
+        casin-sso:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+        casin-product:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+        casin-order:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+        casin-cart:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+        casin-logistics:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+        casin-payment:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+        casin-settle:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+        casin-search:
+          - limit: 60
+            refresh-interval: 60
+            type:
+              - origin
+  strip-prefix: true
+  max:
+    host:
+      connections: 500
+  host:
+      socket-timeout-millis: 60000
+      connect-timeout-millis: 60000
+  add-proxy-headers: true #减少HTTP requests，再次请求从本地缓存中获取
+#=======================================================================================================================
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 600000
+#=======================================================================================================================
+#ribbon的真实值=(ConnectionTimeout+ReadTimeout)*2，该值应当小于hystrix的timeoutInMilliseconds的值，如果大于其值会失去负载均衡(ribbon)的重试机会，而直接熔断
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+#=======================================================================================================================
+
+---
+
+spring:
+  profiles: test
+#=======================================================================================================================
+  #相关Redis配置
+  redis:
+    database: 0         #redis索引（默认0）
+    cluster:
+      nodes: 
+        - 192.168.1.164:6379
+        - 192.168.1.165:6379
+        - 192.168.1.166:6379
+    password:
+    timeout: 5000
+    sentinel:
+      master: mymaster
+      nodes: 192.168.1.164:26379,192.168.1.165:26379,192.168.1.166:26379
+    lettuce:
+      pool:
+        max-active: 8     #连接池最大连接数，使用负值没有限制
+        max-wait: -1      #连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 8       #连接池中的最大空闲连接
+        min-idle: 0       #连接池中的最小空闲连接
+        timeout: 5000     #连接超时时间（毫秒）
+#=======================================================================================================================
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.1.164:8761/eureka/,http://192.168.1.165:8762/eureka/,http://192.168.1.166:8763/eureka/
+#=======================================================================================================================
+zuul:
+  ignored-services: "*" #原真实服务名不再对外暴露
+  routes:
+    casin-sso:
+      path: /sso/**
+      serviceId: casin-sso
+    casin-product:
+      path: /product/**
+      serviceId: casin-product
+    casin-fastdfs:
+      path: /fastdfs/**
+      serviceId: casin-fastdfs
+    casin-order:
+      path: /order/**
+      serviceId: casin-order
+    casin-cart:
+      path: /cart/**
+      serviceId: casin-cart
+    casin-logistics:
+      path: /logistics/**
+      serviceId: casin-logistics
+    casin-payment:
+      path: /payment/**
+      serviceId: casin-payment
+    casin-settle:
+      path: /settle/**
+      serviceId: casin-settle
+    casin-search:
+      path: /search/**
+      serviceId: casin-search
+  ratelimit:
+      enabled: true
+      repository: REDIS
+      policy-list:
+        casin-sso:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+        casin-product:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+        casin-order:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+        casin-cart:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+        casin-logistics:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+        casin-payment:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+        casin-settle:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+        casin-search:
+          - limit: 10000000
+            refresh-interval: 60
+            type:
+              - origin
+  strip-prefix: true
+  max:
+    host:
+      connections: 500
+  host:
+      socket-timeout-millis: 60000
+      connect-timeout-millis: 60000
+  add-proxy-headers: true #减少HTTP requests，再次请求从本地缓存中获取
+#=======================================================================================================================
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 600000
+#=======================================================================================================================
+#ribbon的真实值=(ConnectionTimeout+ReadTimeout)*2，该值应当小于hystrix的timeoutInMilliseconds的值，如果大于其值会失去负载均衡(ribbon)的重试机会，而直接熔断
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+#=======================================================================================================================
