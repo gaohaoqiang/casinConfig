@@ -184,6 +184,16 @@ spring:
       initial-size: 5
       max-total: 5
       max-wait-millis: 5
+    druid:
+      web-stat-filter:
+        enabled: true
+      stat-view-servlet:
+        allow: 127.0.0.1
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: 123456
+      WebStatFilter:
+        exclusions: '*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*'
 #=======================================================================================================================
 #相关mybatis配置
 mybatis:
